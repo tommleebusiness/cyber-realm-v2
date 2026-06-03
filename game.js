@@ -1,14 +1,10 @@
-(function(){
 "use strict";
 
 var curUser=null,users={};
 try{users=JSON.parse(localStorage.getItem("cr_users")||"{}");}catch(e){}
 function saveUsers(){localStorage.setItem("cr_users",JSON.stringify(users));}
-function h(p){var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}return h.toString(36);}
+function h(p){var hv=0;for(var i=0;i<p.length;i++){hv=((hv<<5)-hv)+p.charCodeAt(i);hv|=0;}return hv.toString(36);}
 function id(s){return document.getElementById(s);}
-function sShow(d,show){
-  var el=id(d);if(show)el.classList.remove("hide");else el.classList.add("hide");
-}
 
 function showScreen(s){
   id("login-scr").classList.add("hide");
@@ -25,8 +21,7 @@ id("alogin").onclick=function(){
   if(!u||!p){amsg("Fill all fields","err");return;}
   if(!users[u]){amsg("User not found","err");return;}
   if(users[u].pass!==h(p)){amsg("Wrong password","err");return;}
-  curUser=u;users[u].lastLogin=Date.now();saveUsers();
-  loadGame();showScreen("game");amsg("","");
+  curUser=u;users[u].lastLogin=Date.now();saveUsers();loadGame();showScreen("game");amsg("","");
 };
 
 id("areg").onclick=function(){
@@ -40,8 +35,7 @@ id("areg").onclick=function(){
 };
 
 id("lout").onclick=function(){saveGame();curUser=null;showScreen("login");};
-
-function showP(show){id("panel").classList.toggle("show",show);}
+id("pcan").onclick=function(){id("panel").classList.remove("show");};
 
 var S={c:0,ct:0,n:0,d:0,e:0,g:0,cl:0,bs:0,pr:0,pp:0,cp:1,ps:0,ns:0,ds:0,es:0,gm:1,dm:1,rl:1,rp:0,rg:100,up:{},ac:[],quests:[],cb:null,bh:0};
 
@@ -64,7 +58,6 @@ function loadGame(){
   if(!curUser)return;
   try{var sv=JSON.parse(localStorage.getItem("cr_saves")||"{}");var d=sv[curUser];if(d){var v=JSON.parse(d);for(var k in v)S[k]=v[k];}}catch(e){}
 }
-
 function saveGame(){
   if(!curUser)return;
   var sv={};try{sv=JSON.parse(localStorage.getItem("cr_saves")||"{}");}catch(e){}
@@ -82,35 +75,18 @@ function draw(){
   id("uname").textContent=curUser||"";
 }
 
-function renderPanel(show){
-  showP(show);
-  if(show){
-    var p=id("pc");p.innerHTML="";
-    p.innerHTML='<div style="padding:20px;text-align:center;color:#777">Panel content here</div>';
-  }
-}
+id("tup").onclick=function(){id("panel").classList.add("show");};
+id("tbo").onclick=function(){id("panel").classList.add("show");};
+id("tst").onclick=function(){id("panel").classList.add("show");};
 
-function check(){
-  if(getCPS()>0){var inc=Math.floor(getCPS()*0.3);S.c+=inc;S.ct+=inc;S.rp+=inc;}
-  draw();
-}
-
-// Panel button handlers
-id("tup").onclick=function(){renderPanel(true);};
-id("tbo").onclick=function(){renderPanel(true);};
-id("tst").onclick=function(){renderPanel(true);};
-id("pcan").onclick=function(){renderPanel(false);};
-
-// Auto save
 window.addEventListener("beforeunload",function(){saveGame();});
 setInterval(function(){saveGame();},30000);
-setInterval(function(){check();},1000);
+setInterval(function(){
+  if(getCPS()>0){var inc=Math.floor(getCPS()*0.3);S.c+=inc;S.ct+=inc;S.rp+=inc;}
+  draw();
+},1000);
 
-// Init
 var lastUser=localStorage.getItem("cr_lastUser");
 if(lastUser&&users[lastUser]){curUser=lastUser;loadGame();}
 else{showScreen("login");}
-
 draw();
-
-})();
