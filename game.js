@@ -6,8 +6,8 @@ try{users=JSON.parse(localStorage.getItem("cr_users")||"{}");}catch(e){}
 function saveUsers(){localStorage.setItem("cr_users",JSON.stringify(users));}
 function h(p){var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}return h.toString(36);}
 function id(s){return document.getElementById(s);}
-function sShow(d,none){
-  var el=id(d);if(none)el.classList.add("hide");else el.classList.remove("hide");
+function sShow(d,show){
+  var el=id(d);if(show)el.classList.remove("hide");else el.classList.add("hide");
 }
 
 function showScreen(s){
