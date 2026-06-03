@@ -35,7 +35,6 @@ id("areg").onclick=function(){
 };
 
 id("lout").onclick=function(){saveGame();curUser=null;showScreen("login");};
-id("pcan").onclick=function(){id("panel").classList.remove("show");};
 
 var S={c:0,ct:0,n:0,d:0,e:0,g:0,cl:0,bs:0,pr:0,pp:0,cp:1,ps:0,ns:0,ds:0,es:0,gm:1,dm:1,rl:1,rp:0,rg:100,up:{},ac:[],quests:[],cb:null,bh:0};
 var UPG=[{n:"Neural Link",d:"+1 tap",cb:10,fn:function(){S.cp+=1},mx:100},{n:"Laser Focus",d:"+5 taps",cb:100,fn:function(){S.cp+=5},mx:50},{n:"Plasma Core",d:"+25 taps",cb:1000,fn:function(){S.cp+=25},mx:30},{n:"Nano Bot",d:"+0.5/s",cb:50,fn:function(){S.ps+=0.5},mx:50},{n:"Drone Swarm",d:"+2/s",cb:200,fn:function(){S.ps+=2},mx:30},{n:"AI Core",d:"+10/s",cb:1000,fn:function(){S.ps+=10},mx:20}];
@@ -83,7 +82,8 @@ function draw(){
   id("uname").textContent=curUser||"";
 }
 
-function renderPanel(t){
+function showPanel(t){
+  id("panel").classList.add("show");
   var p=id("pc");p.innerHTML="";
   if(t==="up"){
     id("panT").textContent="Upgrades";
@@ -92,7 +92,7 @@ function renderPanel(t){
       p.innerHTML+='<div class="card'+(ok?" can":"")+(mx?" done":"")+'" data-i="'+i+'"><div class="h"><span class="nm">'+u.n+'</span><span class="lv">'+o+'/'+u.mx+'</span></div><div class="d">'+u.d+'</div><div class="c">'+(mx?"MAX":fmt(cost))+'</div></div>';
     }
     p.querySelectorAll(".card").forEach(function(el){
-      el.onclick=function(){if(el.classList.contains("done"))return;var i=parseInt(el.dataset.i),u=UPG[i],o=S.up[i]||0,cost=Math.floor(u.cb*Math.pow(1.15,o));if(S.c<cost)return;S.c-=cost;S.up[i]=o+1;u.fn();renderPanel("up");draw();};
+      el.onclick=function(){if(el.classList.contains("done"))return;var i=parseInt(el.dataset.i),u=UPG[i],o=S.up[i]||0,cost=Math.floor(u.cb*Math.pow(1.15,o));if(S.c<cost)return;S.c-=cost;S.up[i]=o+1;u.fn();showPanel("up");draw();};
     });
   } else if(t==="bo"){
     id("panT").textContent="Bosses";
@@ -102,7 +102,7 @@ function renderPanel(t){
     } else {
       var pct=Math.max(0,(S.bh/S.cb.hp)*100);
       p.innerHTML='<div class="boss"><div class="bn">'+S.cb.n+'</div><div class="hp"><div class="hp-f" style="width:'+pct+'%"></div></div><div class="st"><span>HP: '+fmt(S.bh)+" / "+fmt(S.cb.hp)+'</span></div><div class="rw">Reward: '+fmt(S.cb.cr)+'</div></div><button class="atk-btn" id="ab">ATTACK</button>';
-      id("ab").onclick=function(){var v=Math.floor(S.cp*S.gm);S.bh-=v;S.rp+=v;S.c+=v;S.ct+=v;if(S.bh<=0)winBoss();else renderPanel("bo");draw();};
+      id("ab").onclick=function(){var v=Math.floor(S.cp*S.gm);S.bh-=v;S.rp+=v;S.c+=v;S.ct+=v;if(S.bh<=0)winBoss();else showPanel("bo");draw();};
     }
   } else if(t==="ac"){
     id("panT").textContent="Achievements";
@@ -115,9 +115,10 @@ function renderPanel(t){
   }
 }
 
-id("tup").onclick=function(){id("panel").classList.add("show");renderPanel("up");};
-id("tbo").onclick=function(){id("panel").classList.add("show");renderPanel("bo");};
-id("tst").onclick=function(){id("panel").classList.add("show");renderPanel("st");};
+id("tup").onclick=function(){showPanel("up");};
+id("tbo").onclick=function(){showPanel("bo");};
+id("tst").onclick=function(){showPanel("st");};
+id("pcan").onclick=function(){id("panel").classList.remove("show");};
 
 window.addEventListener("beforeunload",function(){saveGame();});
 setInterval(function(){saveGame();},30000);
